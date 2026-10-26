@@ -37,6 +37,9 @@ namespace Namsan
                 if(lighter==null) lighter=gameObject.AddComponent<B1Lighter>();
                 lighter.Initialize(eye);
             }
+            var finish=GetComponent<B1WallFinish>();
+            if(finish==null) finish=gameObject.AddComponent<B1WallFinish>();
+            finish.Apply();
             Capture(true);
         }
         void Capture(bool value) { Cursor.lockState=value?CursorLockMode.Locked:CursorLockMode.None; Cursor.visible=!value; }
