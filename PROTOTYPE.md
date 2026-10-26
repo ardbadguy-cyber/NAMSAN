@@ -51,3 +51,13 @@ Pull the updated `B1Explorer.cs`, stop Play, and allow Unity to compile. Open yo
 - Select Player > B1 Explorer in the Inspector to tune speeds, crouch height and camera motion. Set Run Bob Amplitude to 0 to disable running camera motion, including roll.
 
 Runtime checks pending on Windows: use an existing saved scene; verify C lowers both camera and collider without moving feet; walk/crouch/run through open doors; verify Shift speed and moving-only bob; verify bob settles on release and against a wall; place a temporary low solid ceiling to verify stand clearance and recovery after leaving it; verify E and Esc still work and stop/replay resets posture. Cloud verification is limited to code review and Git whitespace checks because Unity Editor is unavailable.
+
+# B101 collectible lighter in existing scenes
+
+Pull and let Unity compile, then play the same B1 scene. `B1Explorer` initializes a runtime `B1Lighter` component automatically; no scene regeneration or Inspector wiring is required. This does not alter saved scene objects. The original B401-only controller is separate.
+
+A gold rectangular engraved lighter, inspired by a luxury hinged-cap design, appears at `(11.5, 0.835, -4.55)` on the standard B101 desk. This is procedural prototype geometry, not a licensed branded asset or exact product replica. If you have manually moved the desk, the fixed pickup position must be adjusted in code. Look down at it within 2.1m and press E to collect. It disappears from the table and appears at the lower-right of the camera. F opens the cap and ignites after opening; F again extinguishes and closes. Opening/closing plays a synthesized metallic click, not a recording of the branded lighter. A flickering warm point light illuminates nearby surfaces. No hand model, fuel system, save persistence, or ghost/item progression is included. Stopping and restarting Play resets the pickup.
+
+All held geometry is noncolliding so it cannot block E interaction or the stand-clearance check. The desk pickup has one forgiving above-table collider. Existing C/Shift movement and camera motion remain in effect. Cursor release prevents pickup/toggle input while allowing the lid to finish animating.
+
+Windows validation pending: in an already saved B1 scene, verify the lighter is visible on the desk; try E from outside reach and behind a wall; approach and collect exactly once; ensure F before collection does nothing; toggle repeatedly and check cap/flame/light/click; move/crouch/run and interact with doors while holding it; Esc releases input; stop/replay resets to table. Cloud checks: code inspection and `git diff --check` only; Unity runtime/render/audio checks are not executed here.

@@ -18,6 +18,7 @@ namespace Namsan
         [Min(.1f)] public float runBobFrequency=2.8f;
 
         CharacterController controller;
+        B1Lighter lighter;
         readonly Collider[] standingHits=new Collider[32];
         float pitch, fall, standingHeight, standingStep, bobPhase;
         Vector3 standingCenter, eyeOrigin;
@@ -29,7 +30,13 @@ namespace Namsan
             controller=GetComponent<CharacterController>();
             standingHeight=controller.height; standingCenter=controller.center;
             standingStep=controller.stepOffset;
-            if(eye!=null) eyeOrigin=eye.transform.localPosition;
+            if(eye!=null)
+            {
+                eyeOrigin=eye.transform.localPosition;
+                lighter=GetComponent<B1Lighter>();
+                if(lighter==null) lighter=gameObject.AddComponent<B1Lighter>();
+                lighter.Initialize(eye);
+            }
             Capture(true);
         }
         void Capture(bool value) { Cursor.lockState=value?CursorLockMode.Locked:CursorLockMode.None; Cursor.visible=!value; }
@@ -42,6 +49,7 @@ namespace Namsan
             {
                 prompt="";
                 AnimateEye(false);
+                if(lighter!=null) lighter.Tick(false);
                 if(m.leftButton.wasPressedThisFrame) Capture(true);
                 return;
             }
@@ -65,6 +73,7 @@ namespace Namsan
             bool running=sprint && controller.isGrounded && moved.sqrMagnitude>Mathf.Pow(.2f*Time.deltaTime,2);
             AnimateEye(running);
             prompt="";
+            if(lighter!=null && lighter.Tick(true)) { prompt=lighter.Prompt; return; }
             if(Physics.Raycast(eye.transform.position,eye.transform.forward,out var hit,2.6f))
             {
                 var door=hit.collider.GetComponentInParent<B1Door>();
@@ -115,7 +124,7 @@ namespace Namsan
         }
         void OnGUI()
         {
-            GUI.Label(new Rect(18,16,1100,30),"NAMSAN B1 | WASD: Move   Mouse: Look   E: Door   C: Crouch   Hold Shift: Run   Esc: Release cursor");
+            GUI.Label(new Rect(18,16,1100,30),"NAMSAN B1 | WASD: Move   Mouse: Look   E: Interact   F: Lighter   C: Crouch   Hold Shift: Run   Esc: Release cursor");
             GUI.Label(new Rect(18,44,300,30),crouched?"CROUCHED | C: Stand (needs clearance)":"");
             GUI.Label(new Rect(Screen.width/2-5,Screen.height/2-12,20,24),"+");
             GUI.Label(new Rect(Screen.width/2-110,Screen.height/2+30,300,30),prompt);
