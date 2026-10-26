@@ -73,7 +73,7 @@ namespace Namsan
             bool running=sprint && controller.isGrounded && moved.sqrMagnitude>Mathf.Pow(.2f*Time.deltaTime,2);
             AnimateEye(running);
             prompt="";
-            if(lighter!=null && lighter.Tick(true)) { prompt=lighter.Prompt; return; }
+            if(lighter!=null && lighter.Tick(true,running)) { prompt=lighter.Prompt; return; }
             if(Physics.Raycast(eye.transform.position,eye.transform.forward,out var hit,2.6f))
             {
                 var door=hit.collider.GetComponentInParent<B1Door>();

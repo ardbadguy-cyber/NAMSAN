@@ -14,7 +14,7 @@ namespace Namsan
         Material gold, dark, fire;
         AudioSource sound;
         AudioClip click;
-        bool owned, open;
+        bool owned, open, extinguished;
         float lidAngle;
 
         public void Initialize(Camera camera)
@@ -71,7 +71,7 @@ namespace Namsan
             var c=obj.GetComponent<Collider>(); c.enabled=false; Destroy(c);
         }
         // Called after player movement, so pickup uses this frame's camera position.
-        public bool Tick(bool acceptInput)
+        public bool Tick(bool acceptInput,bool running=false)
         {
             Prompt="";
             if(eye==null) return false;
@@ -87,17 +87,21 @@ namespace Namsan
                         owned=true; pickup.SetActive(false); held.SetActive(true); Prompt="F : Open lid / light lighter";
                     }
                 }
-                if(owned && keys.fKey.wasPressedThisFrame)
+                if(owned && !running && keys.fKey.wasPressedThisFrame)
                 {
-                    open=!open;
+                    // After wind extinguishes an open lighter, F re-ignites it.
+                    if(open && extinguished) extinguished=false;
+                    else { open=!open; extinguished=false; }
                     sound.PlayOneShot(click,open?1f:.55f);
                 }
             }
             if(owned)
             {
+                // Running blows out the flame but leaves the cap open. It stays out until F.
+                if(running && open) extinguished=true;
                 lidAngle=Mathf.MoveTowards(lidAngle,open?125:0,600*Time.deltaTime);
                 lid.localRotation=Quaternion.Euler(0,0,lidAngle);
-                bool burning=open && lidAngle>100;
+                bool burning=open && !extinguished && lidAngle>100;
                 flame.SetActive(burning); flameLight.enabled=burning;
                 if(burning)
                 {
