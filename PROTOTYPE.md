@@ -40,3 +40,14 @@ The art pass now covers all ten rooms and the entire central corridor. It adds w
 The left landing sign orientation is corrected in newly generated scenes (existing saved scenes are unchanged). B2 and story events remain excluded. Controls are unchanged. Small props are deliberately noncolliding; the cabinet has collision. Door details are parented to the hinge root and move together. E smoothly opens/closes each leaf inward by 100 degrees. Panel and bar colliders leave the viewing aperture clear; interactions resolve from child colliders to the door root. Handles are decorative and move with the door; E operates the door without a separate locking mechanic. The original basic floor menu still generates the older sliding blockout doors for comparison.
 
 Windows Unity checks still required: script compilation; generate the new scene; inspect floors/walls and prop placement on both rows; open and close all ten doors from both sides; verify handles, rivets and bars move with each door and E remains usable; look through the barred apertures; inspect all number plaques from corridor; check stair sign from corridor; stop/restart Play; generate a second scene to check shared material reuse and unique naming. No Unity Editor is installed in this cloud, so no rendering or runtime pass is claimed.
+
+# Existing B1 scenes: crouching and sprinting
+
+Pull the updated `B1Explorer.cs`, stop Play, and allow Unity to compile. Open your existing B1 scene and press Play; **no scene regeneration is needed**. All previously generated B1 layout/atmosphere scenes already reference this script (the older B401-only prototype uses a different controller).
+
+- C toggles crouch/stand. Capsule height changes from its saved standing height (normally 1.8m) to 1.1m, feet stay fixed, camera lowers smoothly, and speed drops to 1.4m/s. A solid overhead obstruction prevents standing; press C again after moving clear.
+- Hold either Shift while moving to run at 5m/s (walk: 2.8m/s). Crouching takes priority over running.
+- Running on the ground adds gentle vertical/lateral camera movement and roll. Stopping, walking, hitting a wall, crouching or releasing the cursor returns the camera smoothly to rest. Camera motion uses actual horizontal displacement, not just held keys.
+- Select Player > B1 Explorer in the Inspector to tune speeds, crouch height and camera motion. Set Run Bob Amplitude to 0 to disable running camera motion, including roll.
+
+Runtime checks pending on Windows: use an existing saved scene; verify C lowers both camera and collider without moving feet; walk/crouch/run through open doors; verify Shift speed and moving-only bob; verify bob settles on release and against a wall; place a temporary low solid ceiling to verify stand clearance and recovery after leaving it; verify E and Esc still work and stop/replay resets posture. Cloud verification is limited to code review and Git whitespace checks because Unity Editor is unavailable.
