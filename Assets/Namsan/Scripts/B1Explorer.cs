@@ -130,7 +130,8 @@ namespace Namsan
         }
         void OnGUI()
         {
-            GUI.Label(new Rect(18,16,1100,30),"NAMSAN B1 | WASD: Move   Mouse: Look   E: Interact   F: Lighter   C: Crouch   Hold Shift: Run   Esc: Release cursor");
+            int floorNumber=Mathf.Clamp(Mathf.RoundToInt(-transform.position.y/BunkerFloor.StoreyHeight)+1,1,4);
+            GUI.Label(new Rect(18,16,1100,30),"NAMSAN B"+floorNumber+" | WASD: Move   Mouse: Look   E: Interact   F: Lighter   C: Crouch   Hold Shift: Run   Esc: Release cursor");
             GUI.Label(new Rect(18,44,300,30),crouched?"CROUCHED | C: Stand (needs clearance)":"");
             GUI.Label(new Rect(Screen.width/2-5,Screen.height/2-12,20,24),"+");
             GUI.Label(new Rect(Screen.width/2-110,Screen.height/2+30,300,30),prompt);

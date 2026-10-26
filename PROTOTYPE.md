@@ -85,3 +85,7 @@ Windows checks still pending: existing atmosphere scene starts without Console e
 ## Wall finish replacement (latest)
 
 The previous runtime-generated 512px wall finish is superseded by the checked-in 2K layered materials. See `WALL_MATERIALS.md` for the current behavior, optional existing-scene editor application, adjustable parameters, asset license, and outstanding Unity validation. Older notes about wall texture generation at Play startup no longer apply; the separate runtime reference props/floor generation remains unchanged.
+
+## Four-floor expansion
+
+See `BUNKER_FLOORS.md`. **NAMSAN > Expand Current Scene to B1-B4** adds B2/B3/B4 and alternating left/right/left physical switchback stairs to the current saved B1 scene. The earlier "B2 not built" descriptions apply only before this optional expansion. No new scene is created. Runtime reference props now recognize floor markers; layer-specific wall materials anchor damp to each floor's height.

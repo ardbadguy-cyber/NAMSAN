@@ -8,6 +8,7 @@ namespace Namsan
     {
         readonly List<Object> owned=new List<Object>();
         Transform root;
+        Vector3 floorOffset;
         Material iron, concrete, enamel, leather, lightSurface, wet;
         public void Apply()
         {
@@ -21,26 +22,31 @@ namespace Namsan
             lightSurface=Mat(new Color(.8f,.76f,.61f),0,.2f);
             lightSurface.EnableKeyword("_EMISSION"); lightSurface.SetColor("_EmissionColor",new Color(1,.9f,.7f)*1.5f);
             UpgradeFloor();
-            // Keep room layout and desks; replace only the generated chair appearance and room fixtures.
-            var renderers=FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None);
-            foreach(var renderer in renderers)
+            var markers=FindObjectsByType<BunkerFloor>(FindObjectsSortMode.None);
+            if(markers.Length==0) DressFloor(GameObject.Find("B1 - ten rooms and central corridor").transform,1);
+            else foreach(var marker in markers) DressFloor(marker.transform,marker.number);
+        }
+        void DressFloor(Transform floor,int number)
+        {
+            floorOffset=floor.position;
+            // Inspect only this floor's saved geometry, avoiding replacements of runtime props.
+            foreach(var renderer in floor.GetComponentsInChildren<MeshRenderer>())
             {
                 if(renderer.name.StartsWith("Chair"))
                 {
                     renderer.enabled=false;
                     var collider=renderer.GetComponent<Collider>(); if(collider!=null) collider.enabled=false;
-                    if(renderer.name=="Chair seat") Chair(renderer.transform.position-Vector3.up*.45f);
+                    if(renderer.name=="Chair seat") Chair(renderer.transform.position-floorOffset-Vector3.up*.45f);
                 }
                 if(renderer.name=="Aged fluorescent housing" || renderer.name=="Fluorescent tube")
-                    if(Mathf.Abs(renderer.transform.position.z)>2) renderer.enabled=false;
+                    if(Mathf.Abs(renderer.transform.position.z-floorOffset.z)>2) renderer.enabled=false;
             }
-            foreach(var lamp in FindObjectsByType<Light>(FindObjectsSortMode.None))
+            foreach(var lamp in floor.GetComponentsInChildren<Light>())
             {
                 if(lamp.name!="Ceiling light") continue;
-                if(Mathf.Abs(lamp.transform.position.z)>2) lamp.enabled=false;
+                if(Mathf.Abs(lamp.transform.position.z-floorOffset.z)>2) lamp.enabled=false;
                 else { lamp.intensity=1.65f; lamp.color=new Color(.89f,.92f,.83f); }
             }
-            // Large overhead duct, collared every 2 metres, offset to leave the centre lights clear.
             Pipe(new Vector3(-14.7f,2.73f,.72f),new Vector3(14.7f,2.73f,.72f),.19f,iron);
             for(int i=0;i<15;i++)
             {
@@ -51,15 +57,15 @@ namespace Namsan
             foreach(int side in new[]{-1,1}) for(int i=0;i<5;i++)
             {
                 float x=-12+i*6;
-                // Surface wiring stays alongside doors, never across their openings.
                 float z=side*1.33f;
                 Pipe(new Vector3(x+1.25f,.65f,z),new Vector3(x+1.25f,2.8f,z),.019f,iron);
                 Box("Wall electrical junction box",new Vector3(x+1.25f,1.62f,z),new Vector3(.26f,.36f,.13f),enamel);
                 Box("Junction cover",new Vector3(x+1.25f,1.62f,z-side*.075f),new Vector3(.21f,.30f,.025f),iron);
                 foreach(float y in new[]{.85f,2.15f,2.65f}) Box("Conduit clamp",new Vector3(x+1.25f,y,z),new Vector3(.075f,.035f,.08f),enamel);
-                Pendant(new Vector3(x,2.72f,side*4.4f),i==4 && side==-1);
+                Pendant(new Vector3(x,2.72f,side*4.4f),number==1 && i==4 && side==-1);
                 Basin(new Vector3(x-2.32f,0,side*4.5f));
             }
+            floorOffset=Vector3.zero;
         }
         Material Mat(Color color,float metallic,float smooth)
         {
@@ -79,12 +85,12 @@ namespace Namsan
         }
         GameObject Box(string name,Vector3 p,Vector3 size,Material m,bool solid=false)
         {
-            var obj=GameObject.CreatePrimitive(PrimitiveType.Cube); obj.name=name; obj.transform.SetParent(root); obj.transform.position=p; obj.transform.localScale=size; obj.GetComponent<Renderer>().sharedMaterial=m;
+            var obj=GameObject.CreatePrimitive(PrimitiveType.Cube); obj.name=name; obj.transform.SetParent(root); obj.transform.position=p+floorOffset; obj.transform.localScale=size; obj.GetComponent<Renderer>().sharedMaterial=m;
             if(!solid) { var c=obj.GetComponent<Collider>(); c.enabled=false; Destroy(c); } return obj;
         }
         void Pipe(Vector3 a,Vector3 b,float radius,Material m)
         {
-            var obj=GameObject.CreatePrimitive(PrimitiveType.Cylinder); obj.name="Utility pipe"; obj.transform.SetParent(root); obj.transform.position=(a+b)/2; obj.transform.up=(b-a).normalized; obj.transform.localScale=new Vector3(radius*2,Vector3.Distance(a,b)/2,radius*2); obj.GetComponent<Renderer>().sharedMaterial=m;
+            var obj=GameObject.CreatePrimitive(PrimitiveType.Cylinder); obj.name="Utility pipe"; obj.transform.SetParent(root); obj.transform.position=(a+b)/2+floorOffset; obj.transform.up=(b-a).normalized; obj.transform.localScale=new Vector3(radius*2,Vector3.Distance(a,b)/2,radius*2); obj.GetComponent<Renderer>().sharedMaterial=m;
             var c=obj.GetComponent<Collider>(); c.enabled=false; Destroy(c);
         }
         void Chair(Vector3 p)
@@ -125,9 +131,9 @@ namespace Namsan
                 triangles[index++]=a; triangles[index++]=b; triangles[index++]=c; triangles[index++]=b; triangles[index++]=d; triangles[index++]=c;
             }
             var mesh=new Mesh(); mesh.name="Metal pendant shade"; mesh.vertices=vertices; mesh.triangles=triangles; mesh.RecalculateNormals(); mesh.RecalculateBounds(); owned.Add(mesh);
-            var obj=new GameObject("Pendant shade"); obj.transform.SetParent(root); obj.transform.position=p; obj.AddComponent<MeshFilter>().sharedMesh=mesh; obj.AddComponent<MeshRenderer>().sharedMaterial=iron;
+            var obj=new GameObject("Pendant shade"); obj.transform.SetParent(root); obj.transform.position=p+floorOffset; obj.AddComponent<MeshFilter>().sharedMesh=mesh; obj.AddComponent<MeshRenderer>().sharedMaterial=iron;
             Pipe(p+Vector3.down*.015f,p+Vector3.down*.005f,.27f,lightSurface);
-            var lamp=new GameObject("Warm interrogation pendant"); lamp.transform.SetParent(root); lamp.transform.position=p+Vector3.down*.12f; lamp.transform.rotation=Quaternion.Euler(90,0,0);
+            var lamp=new GameObject("Warm interrogation pendant"); lamp.transform.SetParent(root); lamp.transform.position=p+floorOffset+Vector3.down*.12f; lamp.transform.rotation=Quaternion.Euler(90,0,0);
             var light=lamp.AddComponent<Light>(); light.type=LightType.Spot; light.spotAngle=115; light.innerSpotAngle=65; light.range=8; light.intensity=4; light.color=new Color(1,.86f,.65f); light.shadows=shadows?LightShadows.Soft:LightShadows.None;
         }
         void UpgradeFloor()
@@ -152,12 +158,18 @@ namespace Namsan
                 m.SetTexture("_MetallicGlossMap",gloss); m.EnableKeyword("_METALLICSPECGLOSSMAP"); m.SetFloat("_Smoothness",.85f); owned.Add(m); r.sharedMaterial=m;
             }
             // A local probe supports dull environmental sheen, not mirror-perfect reflections.
-            var probeObject=new GameObject("Corridor local reflection"); probeObject.transform.SetParent(root); probeObject.transform.position=new Vector3(0,1.5f,0);
-            var probe=probeObject.AddComponent<ReflectionProbe>(); probe.mode=UnityEngine.Rendering.ReflectionProbeMode.Realtime; probe.refreshMode=UnityEngine.Rendering.ReflectionProbeRefreshMode.ViaScripting; probe.size=new Vector3(32,5,4); probe.resolution=64; probe.timeSlicingMode=UnityEngine.Rendering.ReflectionProbeTimeSlicingMode.AllFacesAtOnce; StartCoroutine(CaptureProbe(probe));
+            var markers=FindObjectsByType<BunkerFloor>(FindObjectsSortMode.None);
+            if(markers.Length==0) MakeProbe(0,1);
+            else foreach(var marker in markers) MakeProbe(marker.transform.position.y,marker.number);
         }
-        System.Collections.IEnumerator CaptureProbe(ReflectionProbe probe)
+        void MakeProbe(float y,int number)
         {
-            yield return null;
+            var probeObject=new GameObject("B"+number+" corridor reflection"); probeObject.transform.SetParent(root); probeObject.transform.position=new Vector3(0,y+1.5f,0);
+            var probe=probeObject.AddComponent<ReflectionProbe>(); probe.mode=UnityEngine.Rendering.ReflectionProbeMode.Realtime; probe.refreshMode=UnityEngine.Rendering.ReflectionProbeRefreshMode.ViaScripting; probe.size=new Vector3(32,4,4); probe.resolution=64; probe.timeSlicingMode=UnityEngine.Rendering.ReflectionProbeTimeSlicingMode.AllFacesAtOnce; StartCoroutine(CaptureProbe(probe,number));
+        }
+        System.Collections.IEnumerator CaptureProbe(ReflectionProbe probe,int frames)
+        {
+            for(int i=0;i<frames;i++) yield return null;
             if(probe!=null) probe.RenderProbe();
         }
         void OnDestroy()
