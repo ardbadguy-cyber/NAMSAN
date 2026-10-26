@@ -146,13 +146,11 @@ namespace Namsan
                 Leaf("Window frame top",new Vector3(.65f,1.96f,z),new Vector3(.76f,.065f,.035f),metal);
                 Leaf("Window frame bottom",new Vector3(.65f,1.50f,z),new Vector3(.76f,.065f,.035f),metal);
                 foreach(float x in new[]{.29f,1.01f}) Leaf("Window frame side",new Vector3(x,1.73f,z),new Vector3(.065f,.46f,.035f),metal);
-                // Bolt carriage, keepers and pull match the photograph's silhouette.
-                Leaf("Bolt carriage",new Vector3(.85f,.81f,z*1.5f),new Vector3(.64f,.10f,.08f),rust);
-                Leaf("Bolt bar",new Vector3(.85f,.85f,z*2),new Vector3(.61f,.045f,.045f),metal);
-                foreach(float x in new[]{.61f,.83f,1.09f}) Leaf("Bolt keeper",new Vector3(x,.84f,z*2),new Vector3(.055f,.12f,.08f),metal);
-                Leaf("Bolt grip",new Vector3(.59f,.74f,z*2.2f),new Vector3(.035f,.19f,.035f),metal);
-                Leaf("Pull backplate",new Vector3(1.11f,.60f,z*1.3f),new Vector3(.09f,.28f,.025f),rust);
-                Leaf("Iron pull",new Vector3(1.11f,.60f,z*2),new Vector3(.035f,.19f,.045f),black);
+                // Conventional lever handle on each face, at approximately 1m height.
+                Leaf("Handle backplate",new Vector3(1.11f,1.02f,z*1.15f),new Vector3(.10f,.22f,.025f),metal);
+                Leaf("Handle spindle",new Vector3(1.11f,1.06f,z*1.65f),new Vector3(.045f,.045f,.07f),metal);
+                Leaf("Lever handle",new Vector3(1.02f,1.06f,z*2.1f),new Vector3(.22f,.035f,.04f),metal);
+                Leaf("Keyhole",new Vector3(1.11f,.97f,z*1.4f),new Vector3(.018f,.035f,.012f),black);
                 // Raised rivets across edges and the viewing-window frame.
                 for(int i=0;i<9;i++) foreach(float x in new[]{.07f,1.23f}) Rivet(new Vector3(x,.15f+i*.26f,z));
                 for(int i=0;i<6;i++) foreach(float y in new[]{.08f,2.32f}) Rivet(new Vector3(.15f+i*.20f,y,z));
