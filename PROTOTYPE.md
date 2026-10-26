@@ -30,3 +30,13 @@ Each room is approximately 6 x 6m, corridor width 3m, ceiling height 3m. These a
 Press Play, click Game view. Player starts inside B101 facing the corridor door. WASD/mouse move and look; E toggles doors within 2.6m while looking at them; Escape releases the cursor. Walk through all rooms and the left landing. Stop Play to reset runtime door positions. Scene geometry remains editable outside Play mode.
 
 Validation pending in Windows Unity: verify compilation, B101 exit, all ten doors from both sides, wall collisions, sign readability on both sides, left landing boundary, and reset after stopping/restarting Play. The cloud has no Unity Editor, so runtime and rendering results are not yet verified.
+
+# B101 atmosphere study
+
+Select **NAMSAN > Create B101 Atmosphere**, then Play. This creates a separate, uniquely named `B101_Atmosphere` scene using the B1 layout. Existing scenes and the basic floor menu remain available. The builder saves generated procedural texture PNGs and shared materials in `Assets/Namsan/Generated/Atmosphere`. Repeated generation reuses those assets, preserving any user edits; to make a separate variation, duplicate materials first. Scene objects are editable outside Play mode.
+
+The art pass focuses on B101 and the adjoining east corridor bay. It adds weathered plaster and green lower paint, metal trim, floor joints, an inspection-cover door with handles, a room-number plaque, exposed pipes, vent, filing cabinet, desk files, a simplified rotary-style telephone, ashtray, clock, and warmer tube fixtures. These are procedural prototype shapes and textures, not final photorealistic assets or verified historical reconstruction. No external asset packs or network downloads are required. Only the principal B101 ceiling light gains soft shadows; other lights remain unshadowed.
+
+The left landing sign orientation is corrected in newly generated scenes (existing saved scenes are unchanged). B2 and story events remain excluded. Controls are unchanged. Small props are deliberately noncolliding; the cabinet has collision. Door details are parented to the moving door and should move with it.
+
+Windows Unity checks still required: script compilation; generate the new scene; inspect B101 floor/walls and prop placement; walk out through B101 door and return; verify handles move with door and E remains usable; inspect number plaque from corridor; check stair sign from corridor; stop/restart Play; generate a second scene to check shared material reuse and unique naming. No Unity Editor is installed in this cloud, so no rendering or runtime pass is claimed.

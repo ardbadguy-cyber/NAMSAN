@@ -10,7 +10,12 @@ namespace Namsan
         static Transform root;
         static Material wall, floor, steel, wood, white;
         [MenuItem("NAMSAN/Create B1 Floor")]
-        public static void Create()
+        public static void Create() { CreateLayout(false); }
+
+        [MenuItem("NAMSAN/Create B101 Atmosphere")]
+        public static void CreateAtmosphere() { CreateLayout(true); }
+
+        static void CreateLayout(bool atmosphere)
         {
             if(EditorApplication.isPlaying) return;
             if(!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
@@ -60,7 +65,7 @@ namespace Namsan
             Box("Landing ceiling",new Vector3(-17,3.25f,0),new Vector3(4,.25f,3),wall);
             foreach(int side in new[]{-1,1}) Box("Landing side",new Vector3(-17,1.5f,side*1.5f),new Vector3(4,3,.2f),wall);
             Box("B2 access closed",new Vector3(-19,1.5f,0),new Vector3(.2f,3,3),steel);
-            Sign("STAIRS / B2\nNOT BUILT",new Vector3(-18.85f,1.8f,0),90);
+            Sign("STAIRS / B2\nNOT BUILT",new Vector3(-18.85f,1.8f,0),-90);
             Lamp(new Vector3(-17,2.8f,0),1.5f,5);
             RenderSettings.ambientMode=AmbientMode.Flat; RenderSettings.ambientLight=new Color(.12f,.13f,.12f);
             var player=new GameObject("Player - starts inside B101"); player.transform.position=new Vector3(12,.05f,-3);
@@ -69,10 +74,11 @@ namespace Namsan
             var camera=cameraObject.AddComponent<Camera>(); camera.nearClipPlane=.05f; camera.farClipPlane=120; cameraObject.AddComponent<AudioListener>();
             player.AddComponent<B1Explorer>().eye=camera;
             if(!AssetDatabase.IsValidFolder("Assets/Scenes")) AssetDatabase.CreateFolder("Assets","Scenes");
-            string path=AssetDatabase.GenerateUniqueAssetPath("Assets/Scenes/B1_Layout.unity");
+            if(atmosphere) B101Atmosphere.Apply(root);
+            string path=AssetDatabase.GenerateUniqueAssetPath(atmosphere ? "Assets/Scenes/B101_Atmosphere.unity" : "Assets/Scenes/B1_Layout.unity");
             EditorSceneManager.SaveScene(scene,path); AssetDatabase.SaveAssets();
             Selection.activeGameObject=player; SceneView.lastActiveSceneView?.Frame(new Bounds(Vector3.zero,new Vector3(38,5,16)),false);
-            EditorUtility.DisplayDialog("NAMSAN B1","B1 created. Press Play. E opens doors. Other floors are not included.","OK");
+            EditorUtility.DisplayDialog("NAMSAN B1",atmosphere ? "B101 atmosphere study created. Press Play. E opens doors." : "B1 created. Press Play. E opens doors. Other floors are not included.","OK");
         }
         static Material MaterialAt(string path,Color color)
         {
