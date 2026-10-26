@@ -28,7 +28,7 @@ namespace Namsan
             prompt="";
             if(Physics.Raycast(eye.transform.position,eye.transform.forward,out var hit,2.6f))
             {
-                var door=hit.collider.GetComponent<B1Door>();
+                var door=hit.collider.GetComponentInParent<B1Door>();
                 if(door!=null) { prompt="E : Open / close door"; if(k.eKey.wasPressedThisFrame) door.Toggle(); }
             }
         }

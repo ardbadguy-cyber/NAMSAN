@@ -12,8 +12,11 @@ namespace Namsan
         [MenuItem("NAMSAN/Create B1 Floor")]
         public static void Create() { CreateLayout(false); }
 
-        [MenuItem("NAMSAN/Create B101 Atmosphere")]
+        [MenuItem("NAMSAN/Create B1 Atmosphere")]
         public static void CreateAtmosphere() { CreateLayout(true); }
+
+        [MenuItem("NAMSAN/Create B101 Atmosphere")]
+        public static void CreateAtmosphereLegacy() { CreateLayout(true); }
 
         static void CreateLayout(bool atmosphere)
         {
@@ -75,10 +78,10 @@ namespace Namsan
             player.AddComponent<B1Explorer>().eye=camera;
             if(!AssetDatabase.IsValidFolder("Assets/Scenes")) AssetDatabase.CreateFolder("Assets","Scenes");
             if(atmosphere) B101Atmosphere.Apply(root);
-            string path=AssetDatabase.GenerateUniqueAssetPath(atmosphere ? "Assets/Scenes/B101_Atmosphere.unity" : "Assets/Scenes/B1_Layout.unity");
+            string path=AssetDatabase.GenerateUniqueAssetPath(atmosphere ? "Assets/Scenes/B1_Atmosphere.unity" : "Assets/Scenes/B1_Layout.unity");
             EditorSceneManager.SaveScene(scene,path); AssetDatabase.SaveAssets();
             Selection.activeGameObject=player; SceneView.lastActiveSceneView?.Frame(new Bounds(Vector3.zero,new Vector3(38,5,16)),false);
-            EditorUtility.DisplayDialog("NAMSAN B1",atmosphere ? "B101 atmosphere study created. Press Play. E opens doors." : "B1 created. Press Play. E opens doors. Other floors are not included.","OK");
+            EditorUtility.DisplayDialog("NAMSAN B1",atmosphere ? "Full B1 atmosphere created. Press Play. E opens hinged doors." : "B1 created. Press Play. E opens doors. Other floors are not included.","OK");
         }
         static Material MaterialAt(string path,Color color)
         {
