@@ -40,6 +40,9 @@ namespace Namsan
             var finish=GetComponent<B1WallFinish>();
             if(finish==null) finish=gameObject.AddComponent<B1WallFinish>();
             finish.Apply();
+            var referenceArt=GetComponent<B1ReferenceArt>();
+            if(referenceArt==null) referenceArt=gameObject.AddComponent<B1ReferenceArt>();
+            referenceArt.Apply();
             Capture(true);
         }
         void Capture(bool value) { Cursor.lockState=value?CursorLockMode.Locked:CursorLockMode.None; Cursor.visible=!value; }

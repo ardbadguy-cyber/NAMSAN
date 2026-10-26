@@ -57,11 +57,12 @@ namespace Namsan
                 float cracks=Noise(u,v,7,93);
                 float crack=1-Mathf.SmoothStep(.003f,.012f,Mathf.Abs(cracks-.5f));
                 float chip=paint?Mathf.SmoothStep(.58f,.68f,medium*.65f+broad*.35f):0;
-                float damp=Mathf.SmoothStep(.40f,.80f,broad);
-                Color baseColor=paint?new Color(.25f,.30f,.24f):new Color(.60f,.58f,.51f);
+                float streaks=Noise(u,v,35,131,2);
+                float damp=Mathf.SmoothStep(.40f,.80f,broad)*.6f+Mathf.SmoothStep(.46f,.72f,streaks)*.4f;
+                Color baseColor=paint?new Color(.29f,.31f,.27f):new Color(.60f,.58f,.51f);
                 Color exposed=new Color(.48f,.46f,.39f);
                 Color c=Color.Lerp(baseColor,exposed,chip);
-                c*=1-damp*.23f-crack*.22f;
+                c*=1-damp*.36f-crack*.22f;
                 c*=.94f+grain*.12f;
                 colors[y*n+x]=new Color(c.r,c.g,c.b,1);
                 heights[y*n+x]=grain*.12f+medium*.07f-chip*.18f-crack*.13f;
@@ -80,12 +81,13 @@ namespace Namsan
             normal.wrapMode=TextureWrapMode.Repeat; normal.anisoLevel=4; normal.SetPixels(normals); normal.Apply(true,false);
             resources.Add(color); resources.Add(normal);
         }
-        static float Noise(float u,float v,float frequency,float seed)
+        static float Noise(float u,float v,float frequency,float seed,float verticalFrequency=-1)
         {
-            float a=Mathf.PerlinNoise(u*frequency+seed,v*frequency+seed);
-            float b=Mathf.PerlinNoise((u-1)*frequency+seed,v*frequency+seed);
-            float c=Mathf.PerlinNoise(u*frequency+seed,(v-1)*frequency+seed);
-            float d=Mathf.PerlinNoise((u-1)*frequency+seed,(v-1)*frequency+seed);
+            float fy=verticalFrequency>0?verticalFrequency:frequency;
+            float a=Mathf.PerlinNoise(u*frequency+seed,v*fy+seed);
+            float b=Mathf.PerlinNoise((u-1)*frequency+seed,v*fy+seed);
+            float c=Mathf.PerlinNoise(u*frequency+seed,(v-1)*fy+seed);
+            float d=Mathf.PerlinNoise((u-1)*frequency+seed,(v-1)*fy+seed);
             float sx=u*u*(3-2*u), sy=v*v*(3-2*v);
             return Mathf.Lerp(Mathf.Lerp(a,b,sx),Mathf.Lerp(c,d,sx),sy);
         }
